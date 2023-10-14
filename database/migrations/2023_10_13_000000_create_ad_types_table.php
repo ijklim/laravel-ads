@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->string('ad_type')->primary();
+            $table->string('ad_type', 30)->primary();
         });
     }
 
