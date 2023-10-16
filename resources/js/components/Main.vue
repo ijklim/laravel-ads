@@ -2,11 +2,6 @@
   import Ads from '@/components/Ads.vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
-  import useProcessing from '@/composables/useProcessing.js';
-
-
-  // === Composables ===
-  const processing = useProcessing();
 </script>
 
 <template>

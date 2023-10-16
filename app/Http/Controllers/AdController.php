@@ -20,10 +20,10 @@ class AdController extends Controller
         $primaryKeyField = (new $modelClass)->getKeyName();
         $results = $modelClass::whereNotNull($primaryKeyField);
 
-        if (is_numeric($request->id)) {
+        if ($request->adCode) {
             // Specific search, returns all fields
             return $results
-                ->where($primaryKeyField, $request->id)
+                ->where($primaryKeyField, $request->adCode)
                 ->get();
         }
 

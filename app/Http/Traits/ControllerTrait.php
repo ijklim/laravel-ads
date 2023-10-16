@@ -64,6 +64,14 @@ trait ControllerTrait
     }
 
     /**
+     * Get the primary key field name of the model
+     */
+    public function getModelPrimaryKeyName()
+    {
+        return (new ($this->getModelClass()))->getKeyName();
+    }
+
+    /**
      * Retrieve all field validation rules
      */
     public function getValidationRules()
