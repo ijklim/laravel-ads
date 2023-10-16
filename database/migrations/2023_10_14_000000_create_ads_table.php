@@ -36,6 +36,8 @@ return new class extends Migration
 
             $table->unsignedTinyInteger('display_ratio')->default(1);
 
+            $table->text('html')->nullable();
+
             $table->timestamps();
         });
     }

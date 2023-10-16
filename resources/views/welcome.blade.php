@@ -6,6 +6,9 @@
 
         <title>Ads Server</title>
 
+        <!-- === Icon Font used by Vuetify === -->
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
+
         @vite(['resources/js/app.js'])
     </head>
     <body>

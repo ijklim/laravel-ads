@@ -13,13 +13,15 @@ import { createApp } from 'vue';
  * to use in your application's views. An example is included for you.
  */
 
-// Root component
+
+// === Root component ===
 import App from '@/App.vue';
 const app = createApp(App);
-// const app = createApp({});
 
-// import ExampleComponent from './components/ExampleComponent.vue';
-// app.component('example-component', ExampleComponent);
+
+// === Add Vue Router ===
+import router from '@/router/index.js';
+app.use(router);
 
 /**
  * The following block of code may be used to automatically register your
@@ -38,5 +40,35 @@ const app = createApp(App);
  * an "id" attribute of "app". This element is included with the "auth"
  * scaffolding. Otherwise, you will need to add an element yourself.
  */
+
+
+// === Add Vuetify ===
+// Doc: https://vuetifyjs.com/en/getting-started/installation/
+import 'vuetify/styles';
+import { createVuetify } from 'vuetify';
+// Vuetify Icon Fonts library, doc: https://vuetifyjs.com/en/features/icon-fonts/
+// Note: Must add cdn in `resources/views/welcome.blade.php`
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
+// Note: The following imports can be skipped with vite-plugin-vuetify, ref: https://vuetifyjs.com/en/features/treeshaking/
+// import * as components from 'vuetify/components';
+// import * as directives from 'vuetify/directives';
+
+const vuetify = createVuetify({
+  // components,
+  // directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
+  theme: {
+    // Using dark instead of light theme
+    defaultTheme: 'dark',
+  },
+});
+app.use(vuetify);
+
 
 app.mount('#app');

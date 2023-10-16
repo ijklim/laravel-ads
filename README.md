@@ -25,6 +25,10 @@ pnpm add -D vue vue-router axios
 
 # Vuetify is the styling library
 pnpm add vuetify
+pnpm add -D vite-plugin-vuetify
+
+# For parsing HTML string
+composer require seyyedam7/laravel-html-parser
 
 # === Start server
 php artisan serve
@@ -51,4 +55,13 @@ pnpm dev
 // resources/js/app.js
 import App from '@/App.vue';
 const app = createApp(App);
+```
+
+## Useful Laravel Artisan Commands
+
+```bash
+php artisan make:model AdType
+php artisan make:controller AdController --model=Ad
+
+php artisan migrate:fresh --seed
 ```
