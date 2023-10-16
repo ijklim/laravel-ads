@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue';
+  import Ads from '@/components/Ads.vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
   import useProcessing from '@/composables/useProcessing.js';
@@ -24,12 +24,11 @@
     <!-- VMain necessary to start content below AppHeader, part of Vuetify Application Layout -->
     <VMain class="">
       <VContainer fluid>
-        <VRow no-gutters class="flex-row-reverse mb-5 mb-md-0">
+        <VRow no-gutters class="mb-5 mb-md-0">
           <VCol
             cols="12"
-            md="4"
           >
-            Coming soon
+            <Ads />
           </VCol>
         </VRow>
       </VContainer>

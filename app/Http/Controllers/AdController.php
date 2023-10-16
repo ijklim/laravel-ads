@@ -7,60 +7,34 @@ use Illuminate\Http\Request;
 
 class AdController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    use \App\Http\Traits\ControllerTrait;
 
     /**
-     * Show the form for creating a new resource.
+     * Retrieve the specified resource.
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function get(Request $request)
     {
-        //
-    }
+        $modelClass = $this->getModelClass();
+        $primaryKeyField = (new $modelClass)->getKeyName();
+        $results = $modelClass::whereNotNull($primaryKeyField);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if (is_numeric($request->id)) {
+            // Specific search, returns all fields
+            return $results
+                ->where($primaryKeyField, $request->id)
+                ->get();
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Ad $ad)
-    {
-        //
-    }
+        // Tip: Return specific fields from relationship
+        // Important: Must include foreign key in both (e.g. account_id)
+        $results->select('ad_code', 'image_alt_text');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ad $ad)
-    {
-        //
-    }
+        // Order by Attorney Name by default, suitable for dropdown
+        $results->orderBy('ad_code');
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Ad $ad)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Ad $ad)
-    {
-        //
+        return $results->get();
     }
 
     /**
