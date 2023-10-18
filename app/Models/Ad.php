@@ -4,12 +4,16 @@ namespace App\Models;
 
 class Ad extends \Illuminate\Database\Eloquent\Model
 {
+
     /**
-     * The primary key associated with the table.
+     * The accessors to append to the model's array form. (Tip)
      *
-     * @var string
+     * @var array
      */
-    protected $primaryKey = 'ad_code';
+    protected $appends = [
+        'url_affiliate',
+        'url_product',
+    ];
 
     /**
      * The attributes that are not mass assignable.
@@ -20,11 +24,27 @@ class Ad extends \Illuminate\Database\Eloquent\Model
     protected $guarded = [];
 
     /**
+     * The attributes that should be hidden for arrays. (Tip)
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'html',
+    ];
+
+    /**
      * Whether primary key auto increment. Affects primary key field value after `->save()`
      *
      * @var boolean
      */
     public $incrementing = false;
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'ad_code';
 
 
     // === Relationships ===
@@ -39,7 +59,27 @@ class Ad extends \Illuminate\Database\Eloquent\Model
 
     // === Accessors ===
     /**
+     * Create accessor field `url_affiliate`
+     * • Amazon Product affiliate link if AmazonBanner
+     * • href
+     */
+    public function getUrlAffiliateAttribute()
+    {
+        if ($this->ad_type === 'AmazonBanner' && $this->product_code) {
+            return "https://www.amazon.com/gp/product/$this->product_code?th=1" .
+                '&linkCode=ll1' .
+                '&tag=aimprove-20' .
+                '&language=en_US' .
+                'ref_=as_li_ss_tl';
+        }
+
+        return $this->href;
+    }
+
+    /**
      * Create accessor field `url_product`
+     * • Amazon Product link if AmazonBanner
+     * • href
      */
     public function getUrlProductAttribute()
     {

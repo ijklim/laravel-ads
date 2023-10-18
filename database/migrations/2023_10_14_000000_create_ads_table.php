@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create($this->tableName, function (Blueprint $table) {
-            $table->string('ad_code', 30)->primary();
+            $table->string('ad_code', 30)->primary()->comment('Used for GoogleAdSense.adSlot');
 
             $table->string('ad_type', 30);
             $table
@@ -22,14 +22,15 @@ return new class extends Migration
                 ->references('ad_type')
                 ->on('ad_types');
 
+            // === Amazon Banner ===
             $table->string('product_code', 30)->nullable()->comment('Applies to Amazon product');
             $table->string('href', 255)->nullable();
 
-            $table->string('image_alt_text', 255);
+            $table->string('image_alt_text', 255)->nullable();
             $table->string('image_description', 255)->nullable();
-            $table->string('image_path', 255);
+            $table->string('image_path', 255)->nullable();
 
-            $table->unsignedDecimal('price');
+            $table->unsignedDecimal('price')->nullable();
             $table->string('price_discount_amount', 10)->nullable();
             $table->timestamp('price_updated_at')->nullable();
 
@@ -39,6 +40,11 @@ return new class extends Migration
             $table->unsignedTinyInteger('display_ratio')->default(1);
 
             $table->text('html')->nullable();
+
+            // === Google AdSense ===
+            $table->string('ad_format', 10)->nullable();
+            $table->string('ad_layout_key', 20)->nullable();
+
 
             $table->timestamps();
         });

@@ -46,27 +46,10 @@ class AdController extends Controller
     {
         $query = \App\Models\AdType::query()
             ->select('ad_type')
-            ->with([
-                'ads' => function ($query) {
-                    $query
-                        ->select(
-                            'ad_type',
-                            'ad_code',
-                            'product_code',
-                            'image_alt_text',
-                            'image_description',
-                            'image_path',
-                            'price',
-                            'price_discount_amount',
-                            'height',
-                            'width',
-                            'display_ratio'
-                        );
-                },
-            ]);
+            ->with(['ads'])
+            ->get();
 
-        // return $query->toSql();
-        return response()->json($query->get()->toArray());
+        return response()->json($query->toArray());
     }
 
     /**

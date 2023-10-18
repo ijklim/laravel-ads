@@ -14,6 +14,7 @@ class AdSeeder extends \Illuminate\Database\Seeder
         echo "• Clearing old data\n";
         $this->deleteTable();
 
+        // === Amazon Banner ===
         $seeds = [
             [
                 "CarSeatGracoSlimfit3In1",
@@ -145,12 +146,128 @@ class AdSeeder extends \Illuminate\Database\Seeder
                 null,
                 3,
             ],
+            [
+                "BirdFeederBocoa",
+                "AmazonBanner",
+                "B0CGDVPQHK",
+                "Bocoa Bird Feeder with Smart Bird Watcher Camera",
+                "Bocoa Bird Feeder, Smart Bird Watcher Camera with Solar Pannel, Auto Capture Bird Videos - AI Intelligent Recognition Birds Spieces - Wireless Camera Bird Watching Gifts for Family",
+                'Amazon/BirdFeederBocoa.webp',
+                159.99,
+                '-47%',
+                300,
+                null,
+                1,
+            ],
+            [
+                "MiniPcNab6",
+                "AmazonBanner",
+                "B0C1X191NR",
+                "Mini PC NAB6 Intel Core i7-12650H",
+                "Mini PC NAB6 Intel Core i7-12650H, 10 Cores 16 Threads, up to 4.7GHz 32GB RAM DDR4 1TB PCIe4.0 SSD Dual 2.5 G RJ45 LAN Mini Desktop Computer, 2 x HDMI, 7 x USB Port, WiFi 6, BT5.2",
+                'Amazon/MiniPcNab6.webp',
+                447.20,
+                '-22%',
+                145,
+                null,
+                2,
+            ],
+            [
+                "PickleballPaddlesMTEN",
+                "AmazonBanner",
+                "B0BYV7P9X7",
+                "MTEN Pickleball Paddles, USAPA Approved Fiberglass Surface Pickleball Set",
+                "MTEN Pickleball Paddles, USAPA Approved Fiberglass Surface Pickleball Set with Pickleball Rackets, Pickle Ball Paddle Set for Men & Women",
+                'Amazon/PickleballPaddlesMTEN.webp',
+                39.99,
+                '-50%',
+                301,
+                null,
+                1,
+            ],
+            [
+                "SmartWatchAppleUltra2",
+                "AmazonBanner",
+                "B0CHWZ5VVM",
+                "Apple Smart Watch Ultra 2",
+                "Apple Watch Ultra 2 [GPS + Cellular 49mm] Smartwatch with Rugged Titanium Case & Blue Ocean Band. Fitness Tracker, Precision GPS, Action Button, Extra-Long Battery Life, Bright Retina Display",
+                'Amazon/SmartWatchAppleUltra2.webp',
+                749,
+                '-6%',
+                335,
+                null,
+                2,
+            ],
+            [
+                "SmartWatchTozoS3",
+                "AmazonBanner",
+                "B07L1GWR66",
+                "TOZO S3 Smart Watch",
+                "TOZO S3 Smart Watch (Answer/Make Call) Bluetooth Fitness Tracker with Heart Rate, Blood Oxygen Monitor, Sleep Monitor IP68 Waterproof 1.83-inch HD Color for Men Women Compatible with iPhone & Android",
+                'Amazon/SmartWatchTozoS3.webp',
+                33.99,
+                '-15%',
+                304,
+                null,
+                2,
+            ],
+            [
+                "TvAmazonFire55",
+                "AmazonBanner",
+                "B0B3H6JPYZ",
+                "Amazon Fire TV 55'",
+                "Amazon Fire TV 55\" 4-Series 4K UHD smart TV, stream live TV without cable",
+                'Amazon/TvAmazonFire55.webp',
+                339.99,
+                '-35%',
+                194,
+                null,
+                2,
+            ],
         ];
 
         foreach ($seeds as $seed) {
             \App\Models\Ad::insert(self::addFieldNames($seed));
         }
         echo "• Populated Amazon Ads: " . count($seeds) . "\n";
+
+        // === Google AdSense ===
+        \App\Models\Ad::insert(array_combine(
+            [
+                "ad_code",
+                "ad_type",
+                "ad_format",
+                "ad_layout_key",
+                "display_ratio",
+            ],
+            [
+                "7471404401",
+                "GoogleAdSense",
+                "fluid",
+                "-fb+5w+4e-db+86",
+                2,
+            ]
+        ));
+        echo "• Populated Google AdSense Ads\n";
+
+        // === Mochahost Banner ===
+        \App\Models\Ad::insert(array_combine(
+            [
+                "ad_code",
+                "ad_type",
+                "href",
+                "image_alt_text",
+                "display_ratio",
+            ],
+            [
+                "Mochahost1",
+                "MochahostBanner",
+                "https://affiliates.mochahost.com/idevaffiliate.php?id=6756&tid1=ivan-lim.com",
+                "MochaHost Web Hosting",
+                1,
+            ]
+        ));
+        echo "• Populated Mochahost Ads\n";
     }
 
     public static function addFieldNames($dataArray)
