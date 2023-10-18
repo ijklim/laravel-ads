@@ -27,6 +27,30 @@ class Ad extends \Illuminate\Database\Eloquent\Model
     public $incrementing = false;
 
 
+    // === Relationships ===
+    public function adType()
+    {
+        return $this->belongsTo(
+            AdType::class,
+            (new AdType)->getKeyName()
+        );
+    }
+
+
+    // === Accessors ===
+    /**
+     * Create accessor field `url_product`
+     */
+    public function getUrlProductAttribute()
+    {
+        if ($this->ad_type === 'AmazonBanner' && $this->product_code) {
+            return "https://www.amazon.com/gp/product/$this->product_code";
+        }
+
+        return $this->href;
+    }
+
+
     // === Public functions ===
     /**
      * The list of relationships needed for store and update

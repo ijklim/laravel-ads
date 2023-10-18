@@ -1,11 +1,11 @@
 <script setup>
-  import { name, version } from '@/utilities/constants.js';
+  import { appName, appVersion } from '@/utilities/constants.js';
 </script>
 
 <template>
   <h1>
-    {{ name }}
-    <small>v.{{ version }}</small>
+    {{ appName }}
+    <small>v.{{ appVersion }}</small>
   </h1>
 </template>
 

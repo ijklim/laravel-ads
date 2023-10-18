@@ -22,7 +22,8 @@ return new class extends Migration
                 ->references('ad_type')
                 ->on('ad_types');
 
-            $table->string('href', 255);
+            $table->string('product_code', 30)->nullable()->comment('Applies to Amazon product');
+            $table->string('href', 255)->nullable();
 
             $table->string('image_alt_text', 255);
             $table->string('image_description', 255)->nullable();
@@ -30,6 +31,7 @@ return new class extends Migration
 
             $table->unsignedDecimal('price');
             $table->string('price_discount_amount', 10)->nullable();
+            $table->timestamp('price_updated_at')->nullable();
 
             $table->unsignedSmallInteger('height')->nullable();
             $table->unsignedSmallInteger('width')->nullable();

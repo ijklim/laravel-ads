@@ -1,6 +1,8 @@
+import { displayName, version } from '/package.json';
+
 // === App Specific Info ===
-export const name = 'Ads Server';
-export const version = '1.0.2';
+export const appName = displayName;
+export const appVersion = version;
 
 export const packages = [
   'Laravel 10',

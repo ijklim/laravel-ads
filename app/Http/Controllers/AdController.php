@@ -38,33 +38,95 @@ class AdController extends Controller
     }
 
     /**
+     * Retrieve the specified resource in Json format.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getJson(Request $request)
+    {
+        $query = \App\Models\AdType::query()
+            ->select('ad_type')
+            ->with([
+                'ads' => function ($query) {
+                    $query
+                        ->select(
+                            'ad_type',
+                            'ad_code',
+                            'product_code',
+                            'image_alt_text',
+                            'image_description',
+                            'image_path',
+                            'price',
+                            'price_discount_amount',
+                            'height',
+                            'width',
+                            'display_ratio'
+                        );
+                },
+            ]);
+
+        // return $query->toSql();
+        return response()->json($query->get()->toArray());
+    }
+
+    /**
      * Scan Amazon ad and update price and price_discount_amount
      */
     public static function autoUpdateAmazonPrice(Ad $ad)
     {
-        if (!$ad->href) {
-            // Without href, not possible to check for price
+        $isPriceUpdated = false;
+
+        if (!$ad->ad_type === 'AmazonBanner' || !$ad->product_code) {
+            // Missing product code, not possible to check for price info
             return false;
         }
 
         try {
+            // === Retrieve product page html from Amazon ===
+            $response = \Illuminate\Support\Facades\Http::get($ad->url_product);
+            // print_r($response->body());
+            $ad->html = trim($response->body());
+
             // === Load href html into object ===
             // Doc: https://packagist.org/packages/seyyedam7/laravel-html-parser
-            // $dom = new \PHPHtmlParser\Dom;
-            // $html = $dom->loadFromUrl($ad->href);
-            // $ad->html = $html;
+            $dom = new \PHPHtmlParser\Dom;
+            $dom->loadStr($ad->html);
 
-            $response = \Illuminate\Support\Facades\Http::get($ad->href);
-            // print_r($response->body());
-            $ad->html = $response->body();
+            // === Search for price info ===
+            $prices = $dom->find('.a-price > .a-offscreen');
+            // === Debug Info ===
+            // echo ('• No. of prices: ' . count($prices) . PHP_EOL);
+            // Example: No. of prices: 13
+            if (is_array($prices) && count($prices)) {
+                // echo ('•• First instance of prices / Current Price: ' . $prices[0] . ' / ' . $ad->price . PHP_EOL);
+                // Example: First instance of prices / Current Price: <span class="a-offscreen">$165.81</span> / 157.51
 
+                $price = $prices[0]->text();
+                // Example: $165.81
+
+                if ($price !== "$$ad->price") {
+                    $ad->price = str_replace('$', '', $price);
+
+                    // === Search for price discount info ===
+                    $priceDiscountAmounts = $dom->find('.savingsPercentage', 1);
+                    if (is_array($priceDiscountAmounts) && count($priceDiscountAmounts)) {
+                        $priceDiscountAmount = $priceDiscountAmounts[0]->text();
+                        $ad->price_discount_amount = $priceDiscountAmount;
+                    }
+
+                    $isPriceUpdated = true;
+                }
+            }
+
+            // Record price has been checked/updated
+            $ad->price_updated_at = now();
             $ad->save();
-
-            // $prices = $dom->find('.a-price > .a-offscreen');
-            // echo ('No. of prices: ' . count($prices) . PHP_EOL);
         } catch (\Exception $e) {
-            // Most likely invalid url
+            echo ('[' . __CLASS__ . '::autoUpdateAmazonPrice] Error encountered: ' . $e->getMessage() . PHP_EOL);
+
             return false;
         }
+
+        return $isPriceUpdated;
     }
 }

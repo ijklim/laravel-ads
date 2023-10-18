@@ -65,3 +65,11 @@ php artisan make:controller AdController --model=Ad
 
 php artisan migrate:fresh --seed
 ```
+
+## References
+
+* Laravel 10 Application with Vue 3 https://medium.com/@laraveltuts/laravel-10-application-with-vue-3-complete-guide-to-crud-operations-3705f9a7cb22
+
+* Vuetify components: https://vuetifyjs.com/en/components/all/
+
+* Material Design Icons: https://pictogrammers.com/library/mdi/

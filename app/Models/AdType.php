@@ -22,4 +22,14 @@ class AdType extends \Illuminate\Database\Eloquent\Model
      * Table has no timestamp fields `created_at` and `updated_at`
      */
     public $timestamps = false;
+
+
+    // === Relationships ===
+    public function ads()
+    {
+        return $this->hasMany(
+            Ad::class,
+            $this->getKeyName()
+        );
+    }
 }

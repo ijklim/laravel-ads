@@ -28,7 +28,7 @@
     }
 
     form.formData.value = await fetchAd(props.adCode);
-    console.log(`[${utility.currentFileName}::watch::props.adCode] form.formData`, toRaw(form.formData.value));
+    // console.log(`[${utility.currentFileName}::watch::props.adCode] form.formData`, toRaw(form.formData.value));
   }, { immediate: true });
 
 
@@ -65,6 +65,11 @@
     return [];
   };
 
+  /**
+   * Submit form to save Ad information
+   *
+   * @param {*} event
+   */
   const submitForm = async (event) => {
     const resultsFormValidation = await event;
     if (!resultsFormValidation.valid) {
@@ -74,13 +79,28 @@
 
     form.onSubmit();
   };
+
+  /**
+   * Update info from Amazon page
+   *
+   * todo: complete this method
+   */
+  const updateInfo = async () => {
+    if (!form.formData.value?.href) {
+      return false;
+    }
+
+    const response = await axios.get(form.formData.value.href);
+    console.log(`[${utility.currentFileName}::updateInfo()] response`, response);
+  };
 </script>
 
 <template>
   <!-- === Form that allows user to update Ad === -->
   <VForm validate-on="submit lazy" @submit.prevent="submitForm">
     <VRow v-if="form.formData.value">
-      <VCol md="6">
+      <!-- === Field: Ad Code === -->
+      <VCol cols="12" md="6">
         <VTextField
           label="Ad Code"
           v-model="form.formData.value.ad_code"
@@ -88,7 +108,8 @@
         />
       </VCol>
 
-      <VCol md="6">
+      <!-- === Field: Ad Type === -->
+      <VCol cols="12" md="6" class="pt-0 pt-md-3">
         <VTextField
           label="Ad Type"
           v-model="form.formData.value.ad_type"
@@ -96,14 +117,48 @@
         />
       </VCol>
 
-      <VCol cols="12">
+      <!-- === Field: Price === -->
+      <VCol cols="12" md="6" class="pt-0">
+        <VTextField
+          label="Price"
+          v-model="form.formData.value.price"
+          :rules="FORM_INPUT_RULES.NOT_EMPTY"
+        />
+      </VCol>
+
+      <!-- === Field: Price Discount Amount === -->
+      <VCol cols="12" md="6" class="pt-0">
+        <VTextField
+          label="Price Discount Amount"
+          v-model="form.formData.value.price_discount_amount"
+        />
+      </VCol>
+
+      <!-- === Field: URL === -->
+      <VCol cols="12" class="d-flex pt-0">
         <VTextField
           label="URL"
           v-model="form.formData.value.href"
           :rules="FORM_INPUT_RULES.NOT_EMPTY"
         />
+
+        <!-- Button to retrive and update price related info from Amazon website -->
+        <VBtn
+          class="ml-5 mt-1"
+          color="info"
+          icon="mdi-update"
+          type="button"
+          @click="updateInfo"
+          :disabled="processing.isEventProcessing()"
+        >
+        </VBtn>
       </VCol>
 
+      <VCol cols="12">
+        <iframe :src="form.formData.value.href" frameborder="0" width="100" height="100"></iframe>
+      </VCol>
+
+      <!-- === Field: Image Alt TextRL === -->
       <VCol cols="12">
         <VTextField
           label="Image Alt Text"
@@ -111,6 +166,7 @@
         />
       </VCol>
 
+      <!-- === Field: Image Description === -->
       <VCol cols="12">
         <VTextField
           label="Image Description"
@@ -118,6 +174,7 @@
         />
       </VCol>
 
+      <!-- === Field: Updated At === -->
       <VCol cols="6">
         <VTextField
           label="Updated At"
@@ -126,6 +183,7 @@
         />
       </VCol>
 
+      <!-- === Button: Submit Form === -->
       <VCol cols="12">
         <VBtn
           color="success"
