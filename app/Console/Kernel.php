@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // === Update Ads Pricing Info twice a day ===
+        $schedule->job(new \App\Jobs\UpdateAdsInfo)->twiceDaily();
     }
 
     /**

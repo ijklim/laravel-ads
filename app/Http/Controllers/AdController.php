@@ -44,12 +44,7 @@ class AdController extends Controller
      */
     public function getJson(Request $request)
     {
-        $query = \App\Models\AdType::query()
-            ->select('ad_type')
-            ->with(['ads'])
-            ->get();
-
-        return response()->json($query->toArray());
+        return response()->json(\App\Models\Ad::all()->toArray());
     }
 
     /**

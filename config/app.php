@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
 return [
+    'ip_developer' => env('IP_DEVELOPER', '0.0.0.0'),
 
     /*
     |--------------------------------------------------------------------------
