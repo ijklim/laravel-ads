@@ -23,3 +23,22 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# === Caching ===
+<IfModule mod_headers.c>
+  <filesmatch "\.(php)$">
+    Header set Cache-Control "max-age=1"
+  </filesmatch>
+  <filesmatch "\.(css|htm|html|ini|js|json|xml)$">
+    Header set Cache-Control "max-age=604800, s-maxage=31449600, public"
+  </filesmatch>
+  <filesmatch "\.(pdf)$">
+    Header set Cache-Control "max-age=86400, public"
+  </filesmatch>
+  <FilesMatch "\.(gif|ico|jpeg|jpg|png|svg|wav|webp)$">
+    Header set Cache-Control "max-age=31449600, public"
+  </FilesMatch>
+  <filesmatch "\.(eot|woff2)$">
+    Header set Cache-Control "max-age=314496000, public"
+  </filesmatch>
+</IfModule>

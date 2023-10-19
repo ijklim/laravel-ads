@@ -17,6 +17,9 @@ return new class extends Migration
             $table->renameColumn('image_alt_text', 'title');
             $table->dropColumn('image_path');
             $table->timestamp('html_updated_at')->nullable()->after('html');
+
+            // Changing data type, ensure nullable is set to avoid error "Warning: 1265 Data truncated for column 'html'..."
+            $table->longText('html')->nullable()->change();
         });
     }
 
@@ -29,6 +32,7 @@ return new class extends Migration
             $table->renameColumn('title', 'image_alt_text');
             $table->string('image_path', 255)->nullable();
             $table->dropColumn('html_updated_at');
+            $table->text('html')->nullable()->change();
         });
     }
 };

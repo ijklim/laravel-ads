@@ -61,7 +61,8 @@ class AdController extends Controller
 
         try {
             // === Retrieve product page html from Amazon ===
-            $response = \Illuminate\Support\Facades\Http::get($ad->url_product);
+            // Hint: Removing User-Agent could prevent Amazon from triggering captcha
+            $response = \Illuminate\Support\Facades\Http::withHeader('User-Agent', '')->get($ad->url_product);
             // print_r($response->body());
             $ad->html = trim($response->body());
             $ad->html_updated_at = now();
@@ -101,7 +102,7 @@ class AdController extends Controller
                 $ad->save();
             }
         } catch (\Exception $e) {
-            echo ('[' . __CLASS__ . '::autoUpdateAmazonPrice] Error encountered: ' . $e->getMessage() . PHP_EOL);
+            echo ('[' . __CLASS__ . '::autoUpdateAmazonPrice] Error encountered: ' . substr($e->getMessage(), 0, 2000) . PHP_EOL);
 
             return false;
         }

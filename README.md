@@ -64,6 +64,9 @@ php artisan make:model AdType
 php artisan make:controller AdController --model=Ad
 
 php artisan migrate:fresh --seed
+
+# Useful when config files are changed
+php artisan config:clear
 ```
 
 ## References
