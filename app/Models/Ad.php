@@ -13,6 +13,7 @@ class Ad extends \Illuminate\Database\Eloquent\Model
     protected $appends = [
         'url_affiliate',
         'url_product',
+        'url_segment_image',
     ];
 
     /**
@@ -90,6 +91,15 @@ class Ad extends \Illuminate\Database\Eloquent\Model
         return $this->href;
     }
 
+    /**
+     * Where the Amazon product image is located on this server
+     */
+    public function getUrlSegmentImageAttribute()
+    {
+        // Product pictures should all be of type "webp"
+        return ($this->ad_type === 'AmazonBanner') ? "/img/Amazon/$this->ad_code.webp" : '';
+    }
+
 
     // === Public functions ===
     /**
@@ -114,7 +124,7 @@ class Ad extends \Illuminate\Database\Eloquent\Model
                 'max:255',
                 \Illuminate\Validation\Rule::unique('ads')->ignore($id, 'ad_code'),
             ],
-            'image_alt_text' => 'max:255',
+            'title' => 'max:255',
             'image_description' => 'max:255',
         ];
     }

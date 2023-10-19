@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // === Update Ads Pricing Info twice a day ===
-        $schedule->job(new \App\Jobs\UpdateAdsInfo)->twiceDaily();
+        $schedule->job(new \App\Jobs\UpdateAdsInfo)->hourly();
     }
 
     /**

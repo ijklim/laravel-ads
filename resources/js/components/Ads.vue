@@ -14,6 +14,11 @@
 
 
   // === Methods ===
+  /**
+   * Fetch all ads from database
+   *
+   * @returns {Array.<string>}
+   */
   const fetchAds = async () => {
     // console.log(`[${utility.currentFileName}::fetchAds()] Fetching ads...`);
     const apiResponse = await axios.get('/api/ads');
@@ -39,7 +44,8 @@
   // === Life Cycle Hooks ===
   onMounted(async () => {
     ads.value = (await fetchAds())
-      .map((ad) => ({ title: ad.image_alt_text, value: ad.ad_code }));
+      .map((ad) => ({ title: ad.title ?? ad.ad_code, value: ad.ad_code }));
+    ads.value.unshift({ title: '(Select an Ad)', value: '' });
     // console.log(`[${utility.currentFileName}::onMounted()] ads.value`, toRaw(ads.value));
   });
 </script>

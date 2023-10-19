@@ -100,7 +100,7 @@
   <VForm validate-on="submit lazy" @submit.prevent="submitForm">
     <VRow v-if="form.formData.value">
       <!-- === Field: Ad Code === -->
-      <VCol cols="12" md="6">
+      <VCol cols="12" md="3">
         <VTextField
           label="Ad Code"
           v-model="form.formData.value.ad_code"
@@ -109,7 +109,7 @@
       </VCol>
 
       <!-- === Field: Ad Type === -->
-      <VCol cols="12" md="6" class="pt-0 pt-md-3">
+      <VCol cols="12" md="3" class="pt-0 pt-md-3">
         <VTextField
           label="Ad Type"
           v-model="form.formData.value.ad_type"
@@ -118,7 +118,7 @@
       </VCol>
 
       <!-- === Field: Price === -->
-      <VCol cols="12" md="6" class="pt-0">
+      <VCol cols="12" md="3" class="pt-0 pt-md-3">
         <VTextField
           label="Price"
           v-model="form.formData.value.price"
@@ -127,10 +127,39 @@
       </VCol>
 
       <!-- === Field: Price Discount Amount === -->
-      <VCol cols="12" md="6" class="pt-0">
+      <VCol cols="12" md="3" class="pt-0 pt-md-3">
         <VTextField
           label="Price Discount Amount"
           v-model="form.formData.value.price_discount_amount"
+        />
+      </VCol>
+
+      <!-- === Field: Title === -->
+      <VCol cols="12" class="pt-0">
+        <VTextField
+          label="Title"
+          v-model="form.formData.value.title"
+        />
+      </VCol>
+
+      <!-- === Image Preview === -->
+      <!-- Hint: align-center (vertically middle), justify-center (horizontally center) -->
+      <VCol cols="12" class="d-flex justify-center">
+        <figure class="text-center">
+          <img :src="form.formData.value.url_segment_image" alt="Product Image Preview">
+          <figcaption>
+            Product Image Preview
+          </figcaption>
+        </figure>
+      </VCol>
+
+
+
+      <!-- === Field: Image Description === -->
+      <VCol cols="12">
+        <VTextField
+          label="Image Description"
+          v-model="form.formData.value.image_description"
         />
       </VCol>
 
@@ -152,26 +181,6 @@
           :disabled="processing.isEventProcessing()"
         >
         </VBtn>
-      </VCol>
-
-      <VCol cols="12">
-        <iframe :src="form.formData.value.href" frameborder="0" width="100" height="100"></iframe>
-      </VCol>
-
-      <!-- === Field: Image Alt TextRL === -->
-      <VCol cols="12">
-        <VTextField
-          label="Image Alt Text"
-          v-model="form.formData.value.image_alt_text"
-        />
-      </VCol>
-
-      <!-- === Field: Image Description === -->
-      <VCol cols="12">
-        <VTextField
-          label="Image Description"
-          v-model="form.formData.value.image_description"
-        />
       </VCol>
 
       <!-- === Field: Updated At === -->

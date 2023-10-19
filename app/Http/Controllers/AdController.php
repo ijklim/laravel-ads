@@ -29,7 +29,7 @@ class AdController extends Controller
 
         // Tip: Return specific fields from relationship
         // Important: Must include foreign key in both (e.g. account_id)
-        $results->select('ad_code', 'image_alt_text');
+        $results->select('ad_code', 'title');
 
         // Order by Attorney Name by default, suitable for dropdown
         $results->orderBy('ad_code');
@@ -64,6 +64,8 @@ class AdController extends Controller
             $response = \Illuminate\Support\Facades\Http::get($ad->url_product);
             // print_r($response->body());
             $ad->html = trim($response->body());
+            $ad->html_updated_at = now();
+            $ad->save();
 
             // === Load href html into object ===
             // Doc: https://packagist.org/packages/seyyedam7/laravel-html-parser
@@ -94,11 +96,10 @@ class AdController extends Controller
 
                     $isPriceUpdated = true;
                 }
-            }
 
-            // Record price has been checked/updated
-            $ad->price_updated_at = now();
-            $ad->save();
+                $ad->price_updated_at = now();
+                $ad->save();
+            }
         } catch (\Exception $e) {
             echo ('[' . __CLASS__ . '::autoUpdateAmazonPrice] Error encountered: ' . $e->getMessage() . PHP_EOL);
 
