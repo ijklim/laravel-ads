@@ -21,17 +21,6 @@
   })
 
 
-  // === Computed ===
-  watch(() => props.adCode, async (newValue) => {
-    if (!newValue) {
-      return {}
-    }
-
-    form.formData.value = await fetchAd(props.adCode);
-    // console.log(`[${utility.currentFileName}::watch::props.adCode] form.formData`, toRaw(form.formData.value));
-  }, { immediate: true });
-
-
   // === Methods ===
   /**
    * Fetch ad with adCode from storage
@@ -93,6 +82,17 @@
     const response = await axios.get(form.formData.value.href);
     console.log(`[${utility.currentFileName}::updateInfo()] response`, response);
   };
+
+
+  // === Watcher ===
+  watch(() => props.adCode, async (newValue) => {
+    if (!newValue) {
+      return {}
+    }
+
+    form.formData.value = await fetchAd(props.adCode);
+    // console.log(`[${utility.currentFileName}::watch::props.adCode] form.formData`, toRaw(form.formData.value));
+  }, { immediate: true });
 </script>
 
 <template>

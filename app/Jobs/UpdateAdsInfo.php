@@ -34,7 +34,7 @@ class UpdateAdsInfo implements ShouldQueue
                 // Never updated or updated more than 6 hours ago
                 $query
                     ->whereNull('html_updated_at')
-                    ->orWhere('html_updated_at', '<=', 'DATE_ADD(NOW(), INTERVAL -12 HOUR)');
+                    ->orWhere('html_updated_at', '<=', \DB::raw('DATE_ADD(NOW(), INTERVAL -12 HOUR)'));
             })
             ->limit($limit)
             ->get()

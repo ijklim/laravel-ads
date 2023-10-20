@@ -56,6 +56,12 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 const vuetify = createVuetify({
   // components,
   // directives,
+  defaults: {
+    global: {
+      // Affects density of input fields, table etc.
+      density: "comfortable",
+    },
+  },
   icons: {
     defaultSet: 'mdi',
     aliases,

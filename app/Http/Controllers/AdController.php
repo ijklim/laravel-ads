@@ -18,23 +18,28 @@ class AdController extends Controller
     {
         $modelClass = $this->getModelClass();
         $primaryKeyField = (new $modelClass)->getKeyName();
-        $results = $modelClass::whereNotNull($primaryKeyField);
+        $query = $modelClass::whereNotNull($primaryKeyField);
 
         if ($request->adCode) {
             // Specific search, returns all fields
-            return $results
+            return $query
                 ->where($primaryKeyField, $request->adCode)
                 ->get();
         }
 
-        // Tip: Return specific fields from relationship
-        // Important: Must include foreign key in both (e.g. account_id)
-        $results->select('ad_code', 'title');
+        // Select fields from core table
+        $query->select(
+            'ad_code',
+            'ad_type',
+            'html_updated_at',
+            'price',
+            'price_discount_amount',
+            'price_updated_at',
+            'product_code',
+            'title',
+        );
 
-        // Order by Attorney Name by default, suitable for dropdown
-        $results->orderBy('ad_code');
-
-        return $results->get();
+        return $query->get();
     }
 
     /**
@@ -62,11 +67,13 @@ class AdController extends Controller
         try {
             // === Retrieve product page html from Amazon ===
             // Hint: Removing User-Agent could prevent Amazon from triggering captcha
-            $response = \Illuminate\Support\Facades\Http::withHeader('User-Agent', '')->get($ad->url_product);
-            // print_r($response->body());
-            $ad->html = trim($response->body());
-            $ad->html_updated_at = now();
-            $ad->save();
+            // Hint: Set $refreshHtml to false to skip Amazon call, for testing purpose
+            if ($refreshHtml = 1) {
+                $response = \Illuminate\Support\Facades\Http::withHeader('User-Agent', '')->get($ad->url_product);
+                $ad->html = trim($response->body());
+                $ad->html_updated_at = now();
+                $ad->save();
+            }
 
             // === Load href html into object ===
             // Doc: https://packagist.org/packages/seyyedam7/laravel-html-parser
@@ -75,24 +82,27 @@ class AdController extends Controller
 
             // === Search for price info ===
             $prices = $dom->find('.a-price > .a-offscreen');
+
             // === Debug Info ===
             // echo ('• No. of prices: ' . count($prices) . PHP_EOL);
             // Example: No. of prices: 13
-            if (is_array($prices) && count($prices)) {
-                // echo ('•• First instance of prices / Current Price: ' . $prices[0] . ' / ' . $ad->price . PHP_EOL);
-                // Example: First instance of prices / Current Price: <span class="a-offscreen">$165.81</span> / 157.51
-
+            if (is_countable($prices) && count($prices)) {
                 $price = $prices[0]->text();
                 // Example: $165.81
+
+                // echo ('•• First instance of prices / Current Price: ' . $prices . ' / ' . $ad->price . PHP_EOL);
+                // Example: First instance of prices / Current Price: <span class="a-offscreen">$165.81</span> / 157.51
 
                 if ($price !== "$$ad->price") {
                     $ad->price = str_replace('$', '', $price);
 
                     // === Search for price discount info ===
                     $priceDiscountAmounts = $dom->find('.savingsPercentage', 1);
-                    if (is_array($priceDiscountAmounts) && count($priceDiscountAmounts)) {
+                    if (is_countable($priceDiscountAmounts) && count($priceDiscountAmounts)) {
                         $priceDiscountAmount = $priceDiscountAmounts[0]->text();
                         $ad->price_discount_amount = $priceDiscountAmount;
+                    } else {
+                        $ad->price_discount_amount = null;
                     }
 
                     $isPriceUpdated = true;
