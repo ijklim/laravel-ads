@@ -80,12 +80,11 @@ class AdController extends Controller
             $dom = new \PHPHtmlParser\Dom;
             $dom->loadStr($ad->html);
 
-            // === Search for price info ===
+            // === Price Check  ===
             $prices = $dom->find('.a-price > .a-offscreen');
-
-            // === Debug Info ===
             // echo ('• No. of prices: ' . count($prices) . PHP_EOL);
             // Example: No. of prices: 13
+
             if (is_countable($prices) && count($prices)) {
                 $price = $prices[0]->text();
                 // Example: $165.81
@@ -95,19 +94,26 @@ class AdController extends Controller
 
                 if ($price !== "$$ad->price") {
                     $ad->price = str_replace('$', '', $price);
-
-                    // === Search for price discount info ===
-                    $priceDiscountAmounts = $dom->find('.savingsPercentage', 1);
-                    if (is_countable($priceDiscountAmounts) && count($priceDiscountAmounts)) {
-                        $priceDiscountAmount = $priceDiscountAmounts[0]->text();
-                        $ad->price_discount_amount = $priceDiscountAmount;
-                    } else {
-                        $ad->price_discount_amount = null;
-                    }
-
                     $isPriceUpdated = true;
                 }
+            }
 
+            // === Price Discount Amount Check  ===
+            $priceDiscountAmounts = $dom->find('.savingsPercentage');
+            if (is_countable($priceDiscountAmounts) && count($priceDiscountAmounts)) {
+                $priceDiscountAmount = $priceDiscountAmounts[0]->text();
+            } else {
+                // Note: Missing discount could mean a previous discount has been removed
+                $priceDiscountAmount = null;
+            }
+
+            // Note: Must consider null comparison
+            if (!($priceDiscountAmount === $ad->price_discount_amount)) {
+                $ad->price_discount_amount = $priceDiscountAmount;
+                $isPriceUpdated = true;
+            }
+
+            if ($isPriceUpdated) {
                 $ad->price_updated_at = now();
                 $ad->save();
             }
