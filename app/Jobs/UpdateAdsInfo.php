@@ -26,6 +26,8 @@ class UpdateAdsInfo implements ShouldQueue
      */
     public function handle($limit = 5): void
     {
+        logger()->channel('joblog')->info('=== Starting Price Check ===');
+
         $adCodesWithPriceChecked = [];
 
         \App\Models\Ad::query()
@@ -34,8 +36,9 @@ class UpdateAdsInfo implements ShouldQueue
                 // Never updated or updated more than 6 hours ago
                 $query
                     ->whereNull('html_updated_at')
-                    ->orWhere('html_updated_at', '<=', \DB::raw('DATE_ADD(NOW(), INTERVAL -12 HOUR)'));
+                    ->orWhere('html_updated_at', '<=', \DB::raw('DATE_ADD(NOW(), INTERVAL -' . config('app.interval_price_check') . ' HOUR)'));
             })
+            ->orderBy('html_updated_at', 'ASC')
             ->limit($limit)
             ->get()
             ->each(function ($ad) use (&$adCodesWithPriceChecked) {
@@ -51,7 +54,7 @@ class UpdateAdsInfo implements ShouldQueue
         // === Log Updated Ads Info ===
         if (count($adCodesWithPriceChecked)) {
             echo "👉 Writing to log\n";
-            logger()->channel('joblog')->info('♦ [' . __CLASS__ . '::handle()] Prices Checked: ' . implode(',', $adCodesWithPriceChecked));
+            logger()->channel('joblog')->info('💡 Prices Checked: ' . implode(',', $adCodesWithPriceChecked));
         }
     }
 }
