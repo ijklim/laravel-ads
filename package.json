@@ -1,7 +1,7 @@
 {
     "name": "laravel-ads",
     "displayName": "Ads Server",
-    "version": "1.3.4",
+    "version": "1.3.5",
     "private": true,
     "type": "module",
     "scripts": {

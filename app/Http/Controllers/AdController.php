@@ -81,31 +81,39 @@ class AdController extends Controller
             $dom->loadStr($ad->html);
 
             // === Price Check  ===
+            // Collection: https://github.com/seyyedam7/laravel-html-parser/blob/master/src/PHPHtmlParser/Dom/Node/Collection.php
             $prices = $dom->find('.a-price > .a-offscreen');
             // echo ('• No. of prices: ' . count($prices) . PHP_EOL);
             // Example: No. of prices: 13
 
-            if (is_countable($prices) && count($prices)) {
-                $price = $prices[0]->text();
+            if ($prices->count()) {
+                $price = str_replace('$', '', $prices[0]->text());
                 // Example: $165.81
-
-                // echo ('•• First instance of prices / Current Price: ' . $prices . ' / ' . $ad->price . PHP_EOL);
-                // Example: First instance of prices / Current Price: <span class="a-offscreen">$165.81</span> / 157.51
-
-                if ($price !== "$$ad->price") {
-                    $ad->price = str_replace('$', '', $price);
-                    $isPriceUpdated = true;
-                }
+            } else {
+                $price = null;
             }
+
+            // echo ('•• First instance of Web Price / Database Price: ' . $price . ' / ' . $ad->price . PHP_EOL);
+            // Example: First instance of Web Price / Database Price: <span class="a-offscreen">$165.81</span> / 157.51
+
+            // Note: Must consider null comparison
+            if ($price !== "$ad->price") {
+                $ad->price = $price;
+                $isPriceUpdated = true;
+            }
+
 
             // === Price Discount Amount Check  ===
             $priceDiscountAmounts = $dom->find('.savingsPercentage');
-            if (is_countable($priceDiscountAmounts) && count($priceDiscountAmounts)) {
+            if ($priceDiscountAmounts->count()) {
                 $priceDiscountAmount = $priceDiscountAmounts[0]->text();
             } else {
                 // Note: Missing discount could mean a previous discount has been removed
                 $priceDiscountAmount = null;
             }
+
+            // echo ('•• First instance of Web Discount Amount / Database Discount Amount: ' . $priceDiscountAmount . ' / ' . $ad->price_discount_amount . PHP_EOL);
+            // Example: First instance of Web Discount Amount / Database Discount Amount: -12% / -12%
 
             // Note: Must consider null comparison
             if (!($priceDiscountAmount === $ad->price_discount_amount)) {
