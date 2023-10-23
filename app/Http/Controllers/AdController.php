@@ -64,8 +64,26 @@ class AdController extends Controller
             // === Price Discount Amount Check  ===
             $priceDiscountAmounts = $dom->find('.savingsPercentage');
             if ($priceDiscountAmounts->count()) {
-                $priceDiscountAmount = $priceDiscountAmounts[0]->text();
+                // === Discount Amount found ===
+                $priceDiscountAmountNode = $priceDiscountAmounts->offsetGet(0);
+
+                // Look for ancestor with id `apex_desktop_usedAccordionRow` which hides discount amount
+                $discountHiders = $dom->find('#apex_desktop_usedAccordionRow');
+                if ($discountHiders->count()) {
+                    $discountHiderNode = $discountHiders->offsetGet(0);
+
+                    if ($priceDiscountAmountNode->getAncestor($discountHiderNode->id())) {
+                        // === Discount Hider wraps Discount Amount, thus hiding discount amount ===
+                        $priceDiscountAmount = null;
+                    } else {
+                        $priceDiscountAmount = $priceDiscountAmountNode->text();
+                    }
+                } else {
+                    // === No Discount Hider ===
+                    $priceDiscountAmount = $priceDiscountAmountNode->text();
+                }
             } else {
+                // === No Discount Amount found ===
                 // Note: Missing discount could mean a previous discount has been removed
                 $priceDiscountAmount = null;
             }
