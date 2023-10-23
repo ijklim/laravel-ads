@@ -3,54 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ad;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class AdController extends Controller
 {
     use \App\Http\Traits\ControllerTrait;
-
-    /**
-     * Retrieve the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function get(Request $request)
-    {
-        $modelClass = $this->getModelClass();
-        $primaryKeyField = (new $modelClass)->getKeyName();
-        $query = $modelClass::whereNotNull($primaryKeyField);
-
-        if ($request->adCode) {
-            // Specific search, returns all fields
-            return $query
-                ->where($primaryKeyField, $request->adCode)
-                ->get();
-        }
-
-        // Select fields from core table
-        $query->select(
-            'ad_code',
-            'ad_type',
-            'html_updated_at',
-            'price',
-            'price_discount_amount',
-            'price_updated_at',
-            'product_code',
-            'title',
-        );
-
-        return $query->get();
-    }
-
-    /**
-     * Retrieve the specified resource in Json format.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getJson(Request $request)
-    {
-        return response()->json(\App\Models\Ad::all()->toArray());
-    }
 
     /**
      * Scan Amazon ad and update price and price_discount_amount
@@ -132,5 +90,118 @@ class AdController extends Controller
         }
 
         return $isPriceUpdated;
+    }
+
+    /**
+     * Retrieve the specified resource.
+     *
+     * Note: Laravel automatically returns JSON format for Eloquent models or collections without call to `->json()`
+     *
+     * Usage Tests:
+     * • https://ads-server.localhost/api/ads
+     * • https://ads-server.localhost/api/ads?pk=B008H4SLV6
+     * • https://ads-server.localhost/api/ads?at=AmazonBanner&random=1
+     *
+     * Query Strings:
+     * • at: Filter by ad_type
+     * • pk: Search by primary key (i.e. adCode, highest priority, will ignore other query strings)
+     * • random: 1 random row (might need to support multiple unique rows in the future)
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function get(Request $request)
+    {
+        $modelClass = $this->getModelClass();
+        $primaryKeyField = (new $modelClass)->getKeyName();
+        $query = $modelClass::whereNotNull($primaryKeyField);
+
+        // === Search by Primary Key ===
+        if ($request->pk) {
+            // Specific search, returns all fields
+            return $query
+                ->where($primaryKeyField, $request->pk)
+                ->get();
+        }
+
+        // Note: If not search by primary key, select necessary fields, skipping large fields such as `html`
+        $query->select(
+            'ad_code',
+            'ad_format',
+            'ad_layout_key',
+            'ad_type',
+            'display_ratio',
+            'height',
+            'html_updated_at',
+            'image_description',
+            'price',
+            'price_discount_amount',
+            'price_updated_at',
+            'product_code',
+            'title',
+            'width',
+        );
+
+        // === Ad Type Filter ===
+        if ($request->at) {
+            if (\Str::startsWith($request->at, '-')) {
+                // If starts with -, then return all types NOT equal to text provided
+                $query->whereNot('ad_type', substr($request->at, 1));
+            } else {
+                $query->where('ad_type', $request->at);
+            }
+        }
+
+        // === Return random ad influenced by display_ratio ===
+        if ($request->random) {
+            return self::getRandom($query->get());
+        }
+
+        // === All rows meeting conditions ===
+        return $query->get();
+    }
+
+    /**
+     * Retrieve the specified resource in Json format.
+     *
+     * Todo: Obselete, remove after client is updated
+     *
+     * Usage Tests: https://ads-server.localhost/api/json/ads
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getJson(Request $request)
+    {
+        return response()->json($this->get($request)->toArray());
+    }
+
+    public static function getRandom(Collection $ads)
+    {
+        $sumOfDisplayRatios = $ads->reduce(function ($carry, $ad) : int {
+            return $carry + $ad->display_ratio;
+        }, 0);
+
+        if (!$sumOfDisplayRatios) {
+            // This should not happen
+            return $ads->first();
+        }
+
+        // If $adDistance is 2, and first ad has display ratio of 2, then result will be first ad
+        // If first ad has display ratio of 1, then result will be second ad
+        $adDistance = rand(1, $sumOfDisplayRatios);
+
+        $isAdFound = function ($adDistance) {
+            return $adDistance <= 0;
+        };
+
+        while (!$isAdFound($adDistance)) {
+            $adDistance -= $ads->first()->display_ratio;
+
+            if (!$isAdFound($adDistance)) {
+                // Haven't found the ad yet, remove first item from $ads and continue searching
+                $ads->shift();
+            }
+        }
+
+        return $ads->first();
     }
 }
