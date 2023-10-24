@@ -22,36 +22,45 @@
 
 
   // === Methods ===
+  const eventCodeFetchAd = processing.generateEventCode(`${utility.currentFileName}_fetchAd`);
   /**
    * Fetch ad with adCode from storage
    *
    * @param {string} adCode
    */
   const fetchAd = async (adCode) => {
+    processing.setEvent(eventCodeFetchAd);
+
     // console.log(`[${utility.currentFileName}::fetchAds()] Fetching ads...`);
     const params = {
       params: {
-        adCode,
+        pk: adCode,
       },
     }
     const apiResponse = await axios.get('/api/ads', params);
-
     // console.log(`[${utility.currentFileName}::fetchAd()] apiResponse`, apiResponse);
+
     if (apiResponse.status !== 200) {
-        return [];
+      processing.clearEvent(eventCodeFetchAd);
+      return;
     }
 
     if (apiResponse?.data?.error) {
       console.error(`[${utility.currentFileName}::fetchAd()] Error encountered retrieving ads`, apiResponse.data.error?.message);
-      return [];
+
+      processing.clearEvent(eventCodeFetchAd);
+      return;
     }
 
-    if (apiResponse?.data && Array.isArray(apiResponse?.data)) {
+    if (apiResponse?.data && apiResponse.data?.ad_code === adCode) {
+      processing.clearEvent(eventCodeFetchAd);
       // adCode is the primary key, should only return 1 row
-      return apiResponse?.data[0];
+      return apiResponse.data;
     }
 
-    return [];
+
+    processing.clearEvent(eventCodeFetchAd);
+    return;
   };
 
   /**
@@ -69,20 +78,6 @@
     form.onSubmit();
   };
 
-  /**
-   * Update info from Amazon page
-   *
-   * todo: complete this method
-   */
-  const updateInfo = async () => {
-    if (!form.formData.value?.href) {
-      return false;
-    }
-
-    const response = await axios.get(form.formData.value.href);
-    console.log(`[${utility.currentFileName}::updateInfo()] response`, response);
-  };
-
 
   // === Watcher ===
   watch(() => props.adCode, async (newValue) => {
@@ -96,8 +91,20 @@
 </script>
 
 <template>
+  <!-- === Spinner === -->
+  <div
+    v-if="processing.isEventProcessing(eventCodeFetchAd)"
+    class="text-center my-5"
+  >
+    <VProgressCircular color="amber" indeterminate :size="88" />
+  </div>
+
   <!-- === Form that allows user to update Ad === -->
-  <VForm validate-on="submit lazy" @submit.prevent="submitForm">
+  <VForm
+    v-else
+    validate-on="submit lazy"
+    @submit.prevent="submitForm"
+  >
     <VRow v-if="form.formData.value">
       <!-- === Field: Ad Code === -->
       <VCol cols="12" md="3">
@@ -170,17 +177,6 @@
           v-model="form.formData.value.href"
           :rules="FORM_INPUT_RULES.NOT_EMPTY"
         />
-
-        <!-- Button to retrive and update price related info from Amazon website -->
-        <VBtn
-          class="ml-5 mt-1"
-          color="info"
-          icon="mdi-update"
-          type="button"
-          @click="updateInfo"
-          :disabled="processing.isEventProcessing()"
-        >
-        </VBtn>
       </VCol>
 
       <!-- === Field: Updated At === -->

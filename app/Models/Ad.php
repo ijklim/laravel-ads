@@ -71,7 +71,7 @@ class Ad extends \Illuminate\Database\Eloquent\Model
                 '&linkCode=ll1' .
                 '&tag=aimprove-20' .
                 '&language=en_US' .
-                'ref_=as_li_ss_tl';
+                '&ref_=as_li_ss_tl';
         }
 
         return $this->href;

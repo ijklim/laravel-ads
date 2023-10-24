@@ -136,9 +136,10 @@ class AdController extends Controller
         // === Search by Primary Key ===
         if ($request->pk) {
             // Specific search, returns all fields
+            // Note: Converting to array to exclude large fields such as `html`
             return $query
-                ->where($primaryKeyField, $request->pk)
-                ->get();
+                ->find($request->pk)
+                ->toArray();
         }
 
         // Note: If not search by primary key, select necessary fields, skipping large fields such as `html`
@@ -176,20 +177,6 @@ class AdController extends Controller
 
         // === All rows meeting conditions ===
         return $query->get();
-    }
-
-    /**
-     * Retrieve the specified resource in Json format.
-     *
-     * Todo: Obselete, remove after client is updated
-     *
-     * Usage Tests: https://ads-server.localhost/api/json/ads
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getJson(Request $request)
-    {
-        return response()->json($this->get($request)->toArray());
     }
 
     public static function getRandom(Collection $ads)

@@ -23,5 +23,3 @@ Route::post('ad/update/{id}', [\App\Http\Controllers\AdController::class, 'updat
 Route::get('ad/validation-rules', [\App\Http\Controllers\AdController::class, 'getValidationRules']);
 Route::get('ads', [\App\Http\Controllers\AdController::class, 'get']);
 
-// To Test: http://ads-server.localhost/api/json/ads
-Route::get('json/ads', [\App\Http\Controllers\AdController::class, 'getJson']);
