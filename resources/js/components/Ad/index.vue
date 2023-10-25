@@ -218,6 +218,7 @@
           label="Display Ratio"
           type="number"
           v-model="form.formData.value.display_ratio"
+          :rules="FORM_INPUT_RULES.NOT_EMPTY"
         />
       </VCol>
 

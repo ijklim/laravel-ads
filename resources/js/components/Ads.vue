@@ -72,7 +72,8 @@
     }
 
     if (apiResponse?.data) {
-      return apiResponse?.data;
+      return apiResponse?.data
+        .sort((ad1, ad2) => (ad1.title > ad2.title));
     }
 
     return [];
