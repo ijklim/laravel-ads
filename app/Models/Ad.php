@@ -119,13 +119,9 @@ class Ad extends \Illuminate\Database\Eloquent\Model
         return [
             'ad_code' => 'required|max:30',
             'ad_type' => 'required|max:30',
-            'href' => [
-                'required',
-                'max:255',
-                \Illuminate\Validation\Rule::unique('ads')->ignore($id, 'ad_code'),
-            ],
-            'title' => 'max:255',
-            'image_description' => 'max:255',
+            'display_ratio' => 'required|integer',
+            'image_description' => 'nullable|max:255',
+            'title' => 'nullable|max:255',
         ];
     }
 
@@ -137,10 +133,13 @@ class Ad extends \Illuminate\Database\Eloquent\Model
         // Note: Do NOT use try-catch as validation error will not show on the browser
         $validatedData = $request->validate(self::getValidationRules($id));
 
-        $payload = $request->input();
+        $self = (new self);
+
+        // Remove accessor fields that will cause update error
+        $payload = $request->except(...$self->appends);
 
         $result = self::updateOrCreate(
-            [ (new self)->getKeyName() => $id ],
+            [ $self->getKeyName() => $id ],
             $payload
         );
 

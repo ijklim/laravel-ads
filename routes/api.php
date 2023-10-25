@@ -22,4 +22,5 @@ Route::get('ad/primary-key-name', [\App\Http\Controllers\AdController::class, 'g
 Route::post('ad/update/{id}', [\App\Http\Controllers\AdController::class, 'update']);
 Route::get('ad/validation-rules', [\App\Http\Controllers\AdController::class, 'getValidationRules']);
 Route::get('ads', [\App\Http\Controllers\AdController::class, 'get']);
+Route::get('ad-types', [\App\Http\Controllers\AdTypeController::class, 'get']);
 

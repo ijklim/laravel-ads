@@ -1,7 +1,7 @@
 /**
  * Form and validation related functions
  */
-import { ref } from 'vue';
+import { ref, toRaw } from 'vue';
 import axios from 'axios';
 import useProcessing from '@/composables/useProcessing.js';
 import useUtility from '@/composables/useUtility.js';
@@ -38,6 +38,8 @@ export default (modelPathName) => {
    * @param {Function} callback Additional function to run if submission is successful
    */
   const onSubmit = async (callback = null) => {
+    // console.log(`[${utility.currentFileName}::onSubmit()] formData.value:`, toRaw(formData.value));
+
     const eventCode = processing.generateEventCode('SUBMIT_FORM');
     processing.setEvent(eventCode);
 
@@ -88,10 +90,18 @@ export default (modelPathName) => {
     }
   };
 
+  /**
+   * Reset formData to empty, allowing entry of a new ad
+   */
+  const reset = () => {
+    formData.value = {};
+  };
+
 
   return {
     fetchValidationRules,
     formData,
     onSubmit,
+    reset,
   };
 };

@@ -1,7 +1,7 @@
 <script setup>
   import { computed, onMounted, ref, toRaw } from 'vue';
   import { VDataTable } from 'vuetify/labs/VDataTable';
-  import Ad from '@/components/Ad.vue';
+  import Ad from '@/components/Ad/index.vue';
   import useUtility from '@/composables/useUtility.js';
 
 
@@ -95,8 +95,7 @@
         v-model="selectedAdCode"
         :clearable="true"
         :items="adsForDropdown"
-    >
-    </VSelect>
+    />
 
     <!-- === Ad Component that shows details of an Ad === -->
     <Ad
