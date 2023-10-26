@@ -152,6 +152,7 @@ class AdController extends Controller
             'height',
             'html_updated_at',
             'image_description',
+            'is_enabled',
             'price',
             'price_discount_amount',
             'price_updated_at',

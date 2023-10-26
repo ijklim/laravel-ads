@@ -63,7 +63,9 @@ const app = createApp(App);
 php artisan make:model AdType
 php artisan make:controller AdController --model=Ad
 
+php artisan migrate
 php artisan migrate:fresh --seed
+php artisan migrate:rollback --step=1
 
 # Useful when config files are changed
 php artisan config:clear

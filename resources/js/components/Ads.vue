@@ -2,10 +2,12 @@
   import { computed, onMounted, ref, toRaw } from 'vue';
   import { VDataTable } from 'vuetify/labs/VDataTable';
   import Ad from '@/components/Ad/index.vue';
+  import useForm from '@/composables/useForm.js';
   import useUtility from '@/composables/useUtility.js';
 
 
   // === Composables ===
+  const form = useForm('ad');
   const utility = useUtility(import.meta);
 
 
@@ -15,7 +17,8 @@
   const tableHeaders = [
     { title: 'Ad Code', key: 'ad_code', sortable: true },
     { title: 'Title', key: 'title', sortable: true },
-    { title: 'Price', key: 'price', sortable: false },
+    { title: 'Enabled', key: 'is_enabled', sortable: true },
+    { title: 'Price', key: 'price_info', sortable: false },
     { title: 'Price Checked', key: 'html_updated_at', sortable: true },
   ];
   const tableItemsPerPage = ref(15);
@@ -44,7 +47,12 @@
       .map((ad) => ({
         ad_code: ad.ad_code,
         html_updated_at: ad.html_updated_at,
-        price: `$${ad.price} (${ad.price_discount_amount}) | ${ad.price_updated_at}`,
+        is_enabled: ad.is_enabled,
+        price_info: {
+          price: ad.price,
+          price_discount_amount: ad.price_discount_amount,
+          price_updated_at: ad.price_updated_at,
+        },
         title: ad.title,
         url_product: ad.url_product,
       }));
@@ -78,6 +86,38 @@
 
     return [];
   };
+
+  /**
+   * Transform mySQL timestamp into date string suitable for display purpose
+   *
+   * @param {string} mysqlTimestamp
+   */
+  const formatDate = (mysqlTimestamp) => {
+    if (!mysqlTimestamp) {
+      return '-';
+    }
+
+    const options = {
+      day: 'numeric',       // numeric, 2-digit
+      month: 'numeric',     // numeric, 2-digit, long, short, narrow
+      year: '2-digit',      // numeric, 2-digit
+      hour: '2-digit',      // numeric, 2-digit
+      minute: '2-digit',    // numeric, 2-digit
+    }
+
+    return new Date(mysqlTimestamp).toLocaleDateString('en-US', options);
+  };
+
+  /**
+   * Update database via api call based on field updated
+   *
+   * @param {Object} ad An item from array `adsForTable`
+   * @param {string} fieldName e.g. is_enabled
+   */
+  const handleChangeAd = (ad, fieldName) => {
+    // console.log(`[${utility.currentFileName}::handleChangeAd()] fieldName, ad.ad_code, ad[fieldName]`, fieldName, ad.ad_code, ad[fieldName]);
+    form.updateField(ad.ad_code, fieldName, ad[fieldName]);
+  }
 
 
   // === Life Cycle Hooks ===
@@ -113,11 +153,35 @@
       v-model:items-per-page="tableItemsPerPage"
       :headers="tableHeaders"
       :items="adsForTable"
+      :items-per-page="50"
       :sort-by="tableSortBy"
       v-else
     >
+      <!-- Keys available: index, item, internalItem, value, column -->
+
+      <!-- === Field: html_updated_at === -->
+      <template #item.html_updated_at="{ value }">
+        {{ formatDate(value) }}
+      </template>
+
+      <!-- === Field: is_enabled === -->
+      <template #item.is_enabled="{ item }">
+        <VSwitch
+          inset
+          style="grid-template-areas: none;"
+          v-model="item.is_enabled"
+          @change="handleChangeAd(item, 'is_enabled')"
+        />
+      </template>
+
+      <!-- === Field: price_info === -->
+      <template #item.price_info="{ value }">
+        {{ `$${value.price}` }}{{ value.price_discount_amount ? ` (${value.price_discount_amount})` : '' }} |
+        {{ formatDate(value.price_updated_at) }}
+      </template>
+
+      <!-- === Field: title, Link to product page === -->
       <template #item.title="{ item }">
-        <!-- Link to product page -->
         <a
           rel="nofollow noopener noreferrer"
           target="_blank"

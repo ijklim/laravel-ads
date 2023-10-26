@@ -17,6 +17,25 @@ class Ad extends \Illuminate\Database\Eloquent\Model
     ];
 
     /**
+     * Defining default attribute values
+     */
+    protected $attributes = [
+        'is_enabled' => true,
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'ad_code' => 'string',
+        'html_updated_at' => 'datetime',
+        'is_enabled' => 'boolean',
+        'price_updated_at' => 'datetime',
+    ];
+
+    /**
      * The attributes that are not mass assignable.
      * Note: $guarded is the reverse of $fillable, use only one
      *
@@ -130,13 +149,17 @@ class Ad extends \Illuminate\Database\Eloquent\Model
      */
     public static function merge($request, $id = null)
     {
-        // Note: Do NOT use try-catch as validation error will not show on the browser
-        $validatedData = $request->validate(self::getValidationRules($id));
+        $skipValidation = $request->skip_validation ?? false;
+
+        if (!$skipValidation) {
+            // Note: Do NOT use try-catch as validation error will not show on the browser
+            $validatedData = $request->validate(self::getValidationRules($id));
+        }
 
         $self = (new self);
 
         // Remove accessor fields that will cause update error
-        $payload = $request->except(...$self->appends);
+        $payload = $request->except('skip_validation', ...$self->appends);
 
         $result = self::updateOrCreate(
             [ $self->getKeyName() => $id ],

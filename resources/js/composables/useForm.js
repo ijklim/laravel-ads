@@ -14,7 +14,7 @@ const utility = useUtility(import.meta);
 
 /**
  *
- * @param {string} modelPathName e.g. 'page', 'review'
+ * @param {string} modelPathName Determines api path segment, e.g. 'ad', 'ad-types'
  * @param {Function} removeFromTableItems
  * @param {Object} vm Vue internal component instance from `getCurrentInstance()`
  * @returns
@@ -22,6 +22,20 @@ const utility = useUtility(import.meta);
 export default (modelPathName) => {
   const formData = ref(null);
   const validationRules = ref({});
+  // Intended to be initialized first time it is used, based on modelPathName
+  const primaryKeyName = ref(null);
+
+  /**
+   * Get the primary key name of the model `modelPathName`
+   */
+  const getPrimaryKeyName = async () => {
+    if (primaryKeyName.value) {
+      return primaryKeyName.value;
+    }
+
+    primaryKeyName.value = (await axios.get(`/api/${modelPathName}/primary-key-name`))?.data;
+    return primaryKeyName.value;
+  }
 
   /**
    * Fetch validation rules defined in the Laravel model
@@ -44,11 +58,11 @@ export default (modelPathName) => {
     processing.setEvent(eventCode);
 
     try {
-      const modelPrimaryKeyField = (await axios.get(`/api/${modelPathName}/primary-key-name`))?.data;
-      const modelPrimaryKeyValue = formData.value[modelPrimaryKeyField];
-      // console.log(`[${utility.currentFileName}::onSubmit()] modelPrimaryKeyField, modelPrimaryKeyValue:`, modelPrimaryKeyField, modelPrimaryKeyValue);
+      const primaryKeyName = await getPrimaryKeyName();
+      const primaryKeyValue = formData.value[primaryKeyName];
+      // console.log(`[${utility.currentFileName}::onSubmit()] primaryKeyName, primaryKeyValue:`, primaryKeyName, primaryKeyValue);
 
-      const actionPath = modelPrimaryKeyValue ? `update/${modelPrimaryKeyValue}` : 'store';
+      const actionPath = primaryKeyValue ? `update/${primaryKeyValue}` : 'store';
       const url = `/api/${modelPathName}/${actionPath}`;        // e.g. /api/ad/update/BikePeloton
       // console.log(`[${utility.currentFileName}::onSubmit()] url`, url);
       const response = await axios.post(url, { ...formData.value });
@@ -57,7 +71,7 @@ export default (modelPathName) => {
         formData.value = response.data.result;
 
         if (callback) {
-          await callback(formData.value[modelPrimaryKeyField], formData.value);
+          await callback(formData.value[primaryKeyName], formData.value);
         }
       }
 
@@ -97,11 +111,34 @@ export default (modelPathName) => {
     formData.value = {};
   };
 
+  /**
+   * Perform an immediate update on a database field
+   *
+   * Note: Will reset `formData`
+   *
+   * @param {*} primaryKeyValue
+   * @param {string} fieldName
+   * @param {*} value
+   */
+  const updateField = async (primaryKeyValue, fieldName, fieldValue) => {
+    // Clear existing data
+    reset();
+
+    const primaryKeyName = await getPrimaryKeyName();
+
+    formData.value[primaryKeyName] = primaryKeyValue;
+    formData.value[fieldName] = fieldValue;
+    formData.value['skip_validation'] = true;
+
+    onSubmit();
+  };
+
 
   return {
     fetchValidationRules,
     formData,
     onSubmit,
     reset,
+    updateField,
   };
 };
