@@ -167,8 +167,8 @@
       <!-- === Field: is_enabled === -->
       <template #item.is_enabled="{ item }">
         <VSwitch
-          inset
-          style="grid-template-areas: none;"
+          color="light-green"
+          class="ml-3 switch"
           v-model="item.is_enabled"
           @change="handleChangeAd(item, 'is_enabled')"
         />
@@ -197,3 +197,12 @@
       </template>
     </VDataTable>
 </template>
+
+<style scoped>
+  /* Remove extra vertical spacing and center switch */
+  .switch {
+    grid-template-areas: none;
+    grid-template-columns: none;
+    justify-content: start;
+  }
+</style>

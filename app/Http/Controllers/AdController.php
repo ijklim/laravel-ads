@@ -171,9 +171,9 @@ class AdController extends Controller
             }
         }
 
-        // === Return random ad influenced by display_ratio ===
+        // === Return random enabled ad based on display_ratio ===
         if ($request->random) {
-            return self::getRandom($query->get());
+            return self::getRandom($query->where('is_enabled', true)->get());
         }
 
         // === All rows meeting conditions ===

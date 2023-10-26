@@ -32,6 +32,7 @@ class UpdateAdsInfo implements ShouldQueue
 
         \App\Models\Ad::query()
             ->where('ad_type', 'AmazonBanner')
+            ->where('is_enabled', true)
             ->where(function ($query) {
                 // Never updated or updated more than 6 hours ago
                 $query
