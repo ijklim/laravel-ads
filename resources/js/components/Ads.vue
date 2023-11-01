@@ -19,6 +19,7 @@
     { title: 'Title', key: 'title', sortable: true },
     { title: 'Enabled', key: 'is_enabled', sortable: true },
     { title: 'Price', key: 'price_info', sortable: false },
+    { title: 'Price Updated', key: 'price_updated_at', sortable: true },
     { title: 'Price Checked', key: 'html_updated_at', sortable: true },
   ];
   const tableItemsPerPage = ref(15);
@@ -51,8 +52,8 @@
         price_info: {
           price: ad.price,
           price_discount_amount: ad.price_discount_amount,
-          price_updated_at: ad.price_updated_at,
         },
+        price_updated_at: ad.price_updated_at,
         title: ad.title,
         url_product: ad.url_product,
       }));
@@ -176,8 +177,12 @@
 
       <!-- === Field: price_info === -->
       <template #item.price_info="{ value }">
-        {{ `$${value.price}` }}{{ value.price_discount_amount ? ` (${value.price_discount_amount})` : '' }} |
-        {{ formatDate(value.price_updated_at) }}
+        {{ `$${value.price}` }}{{ value.price_discount_amount ? ` (${value.price_discount_amount})` : '' }}
+      </template>
+
+      <!-- === Field: price_updated_at === -->
+      <template #item.price_updated_at="{ value }">
+        {{ formatDate(value) }}
       </template>
 
       <!-- === Field: title, Link to product page === -->

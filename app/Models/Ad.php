@@ -85,8 +85,8 @@ class Ad extends \Illuminate\Database\Eloquent\Model
      */
     public function getUrlAffiliateAttribute()
     {
-        if ($this->ad_type === 'AmazonBanner' && $this->product_code) {
-            return "https://www.amazon.com/gp/product/$this->product_code?th=1" .
+        if ($this->ad_type === 'AmazonBanner' && $this->ad_code) {
+            return "https://www.amazon.com/gp/product/$this->ad_code?th=1" .
                 '&linkCode=ll1' .
                 '&tag=aimprove-20' .
                 '&language=en_US' .
@@ -103,8 +103,8 @@ class Ad extends \Illuminate\Database\Eloquent\Model
      */
     public function getUrlProductAttribute()
     {
-        if ($this->ad_type === 'AmazonBanner' && $this->product_code) {
-            return "https://www.amazon.com/gp/product/$this->product_code";
+        if ($this->ad_type === 'AmazonBanner') {
+            return "https://www.amazon.com/gp/product/$this->ad_code";
         }
 
         return $this->href;

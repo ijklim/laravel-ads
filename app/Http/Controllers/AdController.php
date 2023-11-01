@@ -17,8 +17,8 @@ class AdController extends Controller
     {
         $isPriceUpdated = false;
 
-        if (!$ad->ad_type === 'AmazonBanner' || !$ad->product_code) {
-            // Missing product code, not possible to check for price info
+        if (!$ad->ad_type === 'AmazonBanner') {
+            // Not Amazon ad, skip
             return false;
         }
 
@@ -156,7 +156,6 @@ class AdController extends Controller
             'price',
             'price_discount_amount',
             'price_updated_at',
-            'product_code',
             'title',
             'width',
         );
