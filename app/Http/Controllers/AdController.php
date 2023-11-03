@@ -153,7 +153,6 @@ class AdController extends Controller
             'href',
             'html_updated_at',
             'image_description',
-            'image_src',
             'is_enabled',
             'price',
             'price_discount_amount',
