@@ -116,7 +116,14 @@ class Ad extends \Illuminate\Database\Eloquent\Model
     public function getUrlSegmentImageAttribute()
     {
         // Product pictures should all be of type "webp"
-        return ($this->ad_type === 'AmazonBanner') ? "/img/Amazon/$this->ad_code.webp" : '';
+        switch ($this->ad_type) {
+            case 'AmazonBanner':
+                return "/img/Amazon/$this->ad_code.webp";
+            case 'MochahostBanner':
+                return "/img/Mochahost/$this->ad_code.webp";
+            default:
+                return '';
+        }
     }
 
 

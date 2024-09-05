@@ -23,7 +23,7 @@
       type: String,
       default: '',
     },
-  })
+  });
 
 
   // === Methods ===
