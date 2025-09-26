@@ -1,12 +1,13 @@
 <script setup>
-  import { reactive } from 'vue';
-  import { version as vuetifyVersion } from 'vuetify';
+  import { reactive, version as versionVue } from 'vue';
+  import { version as versionVuetify } from 'vuetify';
 
   // === State Management ===
   const state = reactive({
     packages: {
       Laravel: document.documentElement.dataset.versionLaravel,
-      Vuetify: vuetifyVersion,
+      Vue: versionVue,
+      Vuetify: versionVuetify,
     },
   });
 </script>
