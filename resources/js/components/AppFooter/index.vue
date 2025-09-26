@@ -1,12 +1,14 @@
 <script setup>
-  import { packages } from '@/utilities/constants.js';
+  import { reactive } from 'vue';
+  import { version as vuetifyVersion } from 'vuetify';
 
-  defineProps({
-    additionalPackages: {
-      type: Array,
-      default: () => [],
+  // === State Management ===
+  const state = reactive({
+    packages: {
+      Laravel: document.documentElement.dataset.versionLaravel,
+      Vuetify: vuetifyVersion,
     },
-  })
+  });
 </script>
 
 <template>
@@ -21,7 +23,14 @@
         <!-- d-md-block: Display only on breakpoint 'md' and above -->
         <VCol v-if="$vuetify.display.mdAndUp">
           <!-- Combine packages into comma separated string -->
-          Built on: {{ packages.concat(additionalPackages).join(', ') }}
+          Built on:
+          <span
+            v-for="packageName in Object.keys(state.packages)"
+            :key="packageName"
+            class="package"
+          >
+            {{ packageName }} v.{{ state.packages[packageName] }}
+          </span>
         </VCol>
 
         <VCol class="text-right">
@@ -31,3 +40,11 @@
     </VContainer>
   </VAppBar>
 </template>
+
+<style>
+.package + .package {
+  &::before {
+    content: ', ';
+  }
+}
+</style>

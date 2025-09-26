@@ -1,11 +1,17 @@
 <script setup>
-  import { appName, appVersion } from '@/utilities/constants.js';
+  import { reactive } from 'vue';
+
+  // === State Management ===
+  const state = reactive({
+    appName: document.documentElement.dataset.appName,
+    versionApp: document.documentElement.dataset.versionApp,
+  });
 </script>
 
 <template>
   <h1>
-    {{ appName }}
-    <small>v.{{ appVersion }}</small>
+    {{ state.appName }}
+    <small>v.{{ state.versionApp }}</small>
   </h1>
 </template>
 

@@ -121,6 +121,8 @@ class Ad extends \Illuminate\Database\Eloquent\Model
                 return "/img/Amazon/$this->ad_code.webp";
             case 'MochahostBanner':
                 return "/img/Mochahost/$this->ad_code.webp";
+            case 'ImageAd':
+                return "/img/ImageAd/$this->ad_code.webp";
             default:
                 return '';
         }
