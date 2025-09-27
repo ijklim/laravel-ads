@@ -83,7 +83,7 @@ php artisan config:clear
 
 * Create another GitHub SSH key to be used to connect to GitHub
 
-  * github.com > Settings > SSH and GPG keys > New SSH key
+  * github.com > `Settings` > `SSH and GPG keys` > `New SSH key`
 
   * Copy content of GitHub public key file, use key type 'Authentication Key'
 
@@ -104,6 +104,21 @@ php artisan config:clear
 * Copy `.env` file to `laravel-ads` using `scp`
 
 * Set folder permissions: `chmod -R 775 storage bootstrap/cache`
+
+
+## GitHub Action Auto Deploy to Mochahost
+
+* In the repository, go to `Settings` > `Secrets and variables` > `Actions` > add secrets
+
+  * SSH_HOST: MochaHost server hostname/IP
+
+  * SSH_USERNAME: Your SSH username
+
+  * SSH_KEY: Your private SSH key content (the entire key including headers)
+
+  * SSH_PORT: SSH port (usually 22)
+
+* Create GitHub action file (e.g. `.github/workflows/ssh-deploy.yml`)
 
 
 ## References
