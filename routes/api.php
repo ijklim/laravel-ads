@@ -24,3 +24,7 @@ Route::get('ad/validation-rules', [\App\Http\Controllers\AdController::class, 'g
 Route::get('ads', [\App\Http\Controllers\AdController::class, 'get']);
 Route::get('ad-types', [\App\Http\Controllers\AdTypeController::class, 'get']);
 
+Route::get('version', fn() => response()->json([
+    'env' => app()->environment(),
+    'version' => config('app.version'),
+]));

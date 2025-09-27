@@ -1,4 +1,4 @@
-# Ads Server using Laravel 10.28.0,
+# Ads Server using Laravel 12
 
 ## Setup
 
@@ -70,6 +70,41 @@ php artisan migrate:rollback --step=1
 # Useful when config files are changed
 php artisan config:clear
 ```
+
+## Deploy to Mochahost
+
+* Create Mochahost SSH Key on local machine: `ssh-keygen -t ed25519 -C "your_email@example.com"`
+
+  * Will generate Mochahost public and private key files
+
+* Copy content of Mochahost public key file (e.g. `id_ed25519.pub`) to cPanel > SSH Access > Manage SSH Keys
+
+  * Note: Can leave private key fields blank
+
+* Create another GitHub SSH key to be used to connect to GitHub
+
+  * github.com > Settings > SSH and GPG keys > New SSH key
+
+  * Copy content of GitHub public key file, use key type 'Authentication Key'
+
+* Create `~/.ssh/config` entry to point to Mochahost private key file
+
+* Access SSH using command `ssh username/domain-name`
+
+  * Copy GitHub private key file to `~/.ssh`
+
+  * Create `~/.ssh/config` entry to point to GitHub private key file
+
+  * Test GitHub connection using `ssh -T git@github.com`
+
+* Clone repo: `git clone git@github.com:ijklim/laravel-ads.git`
+
+  * Folder `laravel-ads` will be created
+
+* Copy `.env` file to `laravel-ads` using `scp`
+
+* Set folder permissions: `chmod -R 775 storage bootstrap/cache`
+
 
 ## References
 
