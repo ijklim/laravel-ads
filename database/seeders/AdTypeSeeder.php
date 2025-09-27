@@ -15,8 +15,8 @@ class AdTypeSeeder extends \Illuminate\Database\Seeder
         $this->deleteTable();
 
         $seeds = [
-            ['AmazonBanner'],
             ['GoogleAdSense'],
+            ['ImageAd'],
             ['MochahostBanner'],
         ];
 

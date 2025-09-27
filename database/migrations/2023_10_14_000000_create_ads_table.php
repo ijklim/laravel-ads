@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('image_description', 255)->nullable();
             $table->string('image_path', 255)->nullable();
 
-            $table->unsignedDecimal('price')->nullable();
+            $table->decimal('price')->unsigned()->nullable();
             $table->string('price_discount_amount', 10)->nullable();
             $table->timestamp('price_updated_at')->nullable();
 

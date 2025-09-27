@@ -33,6 +33,10 @@ jobs:
           echo "Installing Composer dependencies..."
           composer install --no-dev --optimize-autoloader --no-interaction
 
+          # Run tests to ensure code quality
+          echo "Running tests..."
+          php artisan test
+
           # Optimize Laravel application
           echo "Optimizing Laravel application..."
           php artisan optimize

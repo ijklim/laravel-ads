@@ -4,6 +4,7 @@ namespace App\Models;
 
 class Ad extends \Illuminate\Database\Eloquent\Model
 {
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
 
     /**
      * The accessors to append to the model's array form. (Tip)

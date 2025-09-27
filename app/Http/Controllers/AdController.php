@@ -10,105 +10,105 @@ class AdController extends Controller
 {
     use \App\Http\Traits\ControllerTrait;
 
-    /**
-     * Scan Amazon ad and update price and price_discount_amount
-     */
-    public static function autoUpdateAmazonPrice(Ad $ad)
-    {
-        $isPriceUpdated = false;
+    // /**
+    //  * Scan Amazon ad and update price and price_discount_amount
+    //  */
+    // public static function autoUpdateAmazonPrice(Ad $ad)
+    // {
+    //     $isPriceUpdated = false;
 
-        if (!$ad->ad_type === 'AmazonBanner') {
-            // Not Amazon ad, skip
-            return false;
-        }
+    //     if (!$ad->ad_type === 'AmazonBanner') {
+    //         // Not Amazon ad, skip
+    //         return false;
+    //     }
 
-        try {
-            // === Retrieve product page html from Amazon ===
-            // Hint: Removing User-Agent could prevent Amazon from triggering captcha
-            // Hint: Set $refreshHtml to false to skip Amazon call, for testing purpose
-            if ($refreshHtml = 1) {
-                $response = \Illuminate\Support\Facades\Http::withHeader('User-Agent', '')->get($ad->url_product);
-                $ad->html = trim($response->body());
-                $ad->html_updated_at = now();
-                $ad->save();
-            }
+    //     try {
+    //         // === Retrieve product page html from Amazon ===
+    //         // Hint: Removing User-Agent could prevent Amazon from triggering captcha
+    //         // Hint: Set $refreshHtml to false to skip Amazon call, for testing purpose
+    //         if ($refreshHtml = 1) {
+    //             $response = \Illuminate\Support\Facades\Http::withHeader('User-Agent', '')->get($ad->url_product);
+    //             $ad->html = trim($response->body());
+    //             $ad->html_updated_at = now();
+    //             $ad->save();
+    //         }
 
-            // === Load href html into object ===
-            // Doc: https://packagist.org/packages/seyyedam7/laravel-html-parser
-            $dom = new \PHPHtmlParser\Dom;
-            $dom->loadStr($ad->html);
+    //         // === Load href html into object ===
+    //         // Doc: https://packagist.org/packages/seyyedam7/laravel-html-parser
+    //         $dom = new \PHPHtmlParser\Dom;
+    //         $dom->loadStr($ad->html);
 
-            // === Price Check  ===
-            // Collection: https://github.com/seyyedam7/laravel-html-parser/blob/master/src/PHPHtmlParser/Dom/Node/Collection.php
-            $prices = $dom->find('.a-price > .a-offscreen');
-            // echo ('• No. of prices: ' . count($prices) . PHP_EOL);
-            // Example: No. of prices: 13
+    //         // === Price Check  ===
+    //         // Collection: https://github.com/seyyedam7/laravel-html-parser/blob/master/src/PHPHtmlParser/Dom/Node/Collection.php
+    //         $prices = $dom->find('.a-price > .a-offscreen');
+    //         // echo ('• No. of prices: ' . count($prices) . PHP_EOL);
+    //         // Example: No. of prices: 13
 
-            if ($prices->count()) {
-                $price = str_replace('$', '', $prices[0]->text());
-                // Example: $165.81
-            } else {
-                $price = null;
-            }
+    //         if ($prices->count()) {
+    //             $price = str_replace('$', '', $prices[0]->text());
+    //             // Example: $165.81
+    //         } else {
+    //             $price = null;
+    //         }
 
-            // echo ('•• First instance of Web Price / Database Price: ' . $price . ' / ' . $ad->price . PHP_EOL);
-            // Example: First instance of Web Price / Database Price: <span class="a-offscreen">$165.81</span> / 157.51
+    //         // echo ('•• First instance of Web Price / Database Price: ' . $price . ' / ' . $ad->price . PHP_EOL);
+    //         // Example: First instance of Web Price / Database Price: <span class="a-offscreen">$165.81</span> / 157.51
 
-            // Note: Must consider null comparison
-            if ($price !== "$ad->price") {
-                $ad->price = $price;
-                $isPriceUpdated = true;
-            }
+    //         // Note: Must consider null comparison
+    //         if ($price !== "$ad->price") {
+    //             $ad->price = $price;
+    //             $isPriceUpdated = true;
+    //         }
 
 
-            // === Price Discount Amount Check  ===
-            $priceDiscountAmounts = $dom->find('.savingsPercentage');
-            if ($priceDiscountAmounts->count()) {
-                // === Discount Amount found ===
-                $priceDiscountAmountNode = $priceDiscountAmounts->offsetGet(0);
+    //         // === Price Discount Amount Check  ===
+    //         $priceDiscountAmounts = $dom->find('.savingsPercentage');
+    //         if ($priceDiscountAmounts->count()) {
+    //             // === Discount Amount found ===
+    //             $priceDiscountAmountNode = $priceDiscountAmounts->offsetGet(0);
 
-                // Look for ancestor with id `apex_desktop_usedAccordionRow` which hides discount amount
-                $discountHiders = $dom->find('#apex_desktop_usedAccordionRow');
-                if ($discountHiders->count()) {
-                    $discountHiderNode = $discountHiders->offsetGet(0);
+    //             // Look for ancestor with id `apex_desktop_usedAccordionRow` which hides discount amount
+    //             $discountHiders = $dom->find('#apex_desktop_usedAccordionRow');
+    //             if ($discountHiders->count()) {
+    //                 $discountHiderNode = $discountHiders->offsetGet(0);
 
-                    if ($priceDiscountAmountNode->getAncestor($discountHiderNode->id())) {
-                        // === Discount Hider wraps Discount Amount, thus hiding discount amount ===
-                        $priceDiscountAmount = null;
-                    } else {
-                        $priceDiscountAmount = $priceDiscountAmountNode->text();
-                    }
-                } else {
-                    // === No Discount Hider ===
-                    $priceDiscountAmount = $priceDiscountAmountNode->text();
-                }
-            } else {
-                // === No Discount Amount found ===
-                // Note: Missing discount could mean a previous discount has been removed
-                $priceDiscountAmount = null;
-            }
+    //                 if ($priceDiscountAmountNode->getAncestor($discountHiderNode->id())) {
+    //                     // === Discount Hider wraps Discount Amount, thus hiding discount amount ===
+    //                     $priceDiscountAmount = null;
+    //                 } else {
+    //                     $priceDiscountAmount = $priceDiscountAmountNode->text();
+    //                 }
+    //             } else {
+    //                 // === No Discount Hider ===
+    //                 $priceDiscountAmount = $priceDiscountAmountNode->text();
+    //             }
+    //         } else {
+    //             // === No Discount Amount found ===
+    //             // Note: Missing discount could mean a previous discount has been removed
+    //             $priceDiscountAmount = null;
+    //         }
 
-            // echo ('•• First instance of Web Discount Amount / Database Discount Amount: ' . $priceDiscountAmount . ' / ' . $ad->price_discount_amount . PHP_EOL);
-            // Example: First instance of Web Discount Amount / Database Discount Amount: -12% / -12%
+    //         // echo ('•• First instance of Web Discount Amount / Database Discount Amount: ' . $priceDiscountAmount . ' / ' . $ad->price_discount_amount . PHP_EOL);
+    //         // Example: First instance of Web Discount Amount / Database Discount Amount: -12% / -12%
 
-            // Note: Must consider null comparison
-            if (!($priceDiscountAmount === $ad->price_discount_amount)) {
-                $ad->price_discount_amount = $priceDiscountAmount;
-                $isPriceUpdated = true;
-            }
+    //         // Note: Must consider null comparison
+    //         if (!($priceDiscountAmount === $ad->price_discount_amount)) {
+    //             $ad->price_discount_amount = $priceDiscountAmount;
+    //             $isPriceUpdated = true;
+    //         }
 
-            if ($isPriceUpdated) {
-                $ad->price_updated_at = now();
-                $ad->save();
-            }
-        } catch (\Exception $e) {
-            echo ('[' . __CLASS__ . '::autoUpdateAmazonPrice] Error encountered: ' . substr($e->getMessage(), 0, 2000) . PHP_EOL);
+    //         if ($isPriceUpdated) {
+    //             $ad->price_updated_at = now();
+    //             $ad->save();
+    //         }
+    //     } catch (\Exception $e) {
+    //         echo ('[' . __CLASS__ . '::autoUpdateAmazonPrice] Error encountered: ' . substr($e->getMessage(), 0, 2000) . PHP_EOL);
 
-            return false;
-        }
+    //         return false;
+    //     }
 
-        return $isPriceUpdated;
-    }
+    //     return $isPriceUpdated;
+    // }
 
     /**
      * Retrieve the specified resource.
@@ -135,11 +135,9 @@ class AdController extends Controller
 
         // === Search by Primary Key ===
         if ($request->pk) {
-            // Specific search, returns all fields
-            // Note: Converting to array to exclude large fields such as `html`
-            return $query
-                ->find($request->pk)
-                ->toArray();
+            // Specific search, returns all fields including hidden ones
+            $ad = $query->find($request->pk);
+            return $ad ? $ad->makeVisible(['html'])->toArray() : null;
         }
 
         // Note: If not search by primary key, select necessary fields, skipping large fields such as `html`
