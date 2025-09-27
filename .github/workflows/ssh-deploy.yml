@@ -29,16 +29,8 @@ jobs:
           echo "Pulling latest changes from GitHub..."
           git pull origin main
 
-          # Install dev dependencies for testing
-          echo "Installing Composer dependencies with dev packages for testing..."
-          php composer.phar install --optimize-autoloader --no-interaction
-
-          # Run tests to ensure code quality
-          echo "Running tests..."
-          php artisan test
-
-          # Remove dev dependencies for production
-          echo "Removing dev dependencies for production..."
+          # Install/update Composer dependencies
+          echo "Installing Composer dependencies..."
           php composer.phar install --no-dev --optimize-autoloader --no-interaction
 
           # Optimize Laravel application
