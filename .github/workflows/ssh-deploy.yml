@@ -31,7 +31,7 @@ jobs:
 
           # Install/update Composer dependencies
           echo "Installing Composer dependencies..."
-          composer install --no-dev --optimize-autoloader --no-interaction
+          php composer.phar install --no-dev --optimize-autoloader --no-interaction
 
           # Run tests to ensure code quality
           echo "Running tests..."

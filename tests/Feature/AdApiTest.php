@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Ad;
+use Database\Seeders\AdTypeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,8 +15,8 @@ class AdApiTest extends TestCase
     {
         parent::setUp();
 
-        // Seed the ad_types table for foreign key constraints
-        $this->seed(\Database\Seeders\AdTypeSeeder::class);
+        // Seed the ad types for each test (this is the standard Laravel approach)
+        $this->seed(AdTypeSeeder::class);
     }
 
     /**
