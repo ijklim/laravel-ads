@@ -27,8 +27,8 @@ pnpm add -D vue vue-router axios
 pnpm add vuetify
 pnpm add -D vite-plugin-vuetify
 
-# For parsing HTML string
-composer require seyyedam7/laravel-html-parser
+# For parsing HTML string (package vulnerable, removed)
+# composer require seyyedam7/laravel-html-parser
 
 # === Start server
 php artisan serve
@@ -97,13 +97,50 @@ php artisan config:clear
 
   * Test GitHub connection using `ssh -T git@github.com`
 
-* Clone repo: `git clone git@github.com:ijklim/laravel-ads.git`
+  * Clone repo: `git clone git@github.com:ijklim/laravel-ads.git`
 
-  * Folder `laravel-ads` will be created
+    * A `laravel-ads` folder will be created
+
+    * Note: This initial clone must be performed manually once to enable subsequent `git pull` operations
+
+  * Set folder permissions: `chmod -R 775 storage bootstrap/cache`
+
+  * Install package managers
+
+  ```sh
+  # Install `composer` inside project folder
+  curl -sS https://getcomposer.org/installer -o composer-setup.php
+  php composer-setup.php
+
+  # Verify Installation
+  php composer.phar -V
+
+  # Install `pnpm` in `~/.local/bin/`
+  curl -fsSL https://get.pnpm.io/install.sh -o install.sh
+  bash install.sh
+
+  # Install `Node.js`
+  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh -o install.sh
+  bash install.sh
+
+  # Restart terminal, then verify installation
+  nvm -v
+
+
+  # Then, reload your shell:
+  # export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+  # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  # Now install the desired Node.js version (e.g., latest LTS):
+  nvm install --lts
+  # Switches to that LTS version
+  nvm use --lts
+  # Version Check
+  node -v
+  ```
 
 * Copy `.env` file to `laravel-ads` using `scp`
 
-* Set folder permissions: `chmod -R 775 storage bootstrap/cache`
 
 
 ## GitHub Action Auto Deploy to Mochahost

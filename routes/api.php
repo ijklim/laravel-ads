@@ -26,5 +26,7 @@ Route::get('ad-types', [\App\Http\Controllers\AdTypeController::class, 'get']);
 
 Route::get('version', fn() => response()->json([
     'env' => app()->environment(),
-    'version' => config('app.version'),
+    'app_name' => config('app.name'),
+    'version_app' => config('app.version'),
+    'version_laravel' => app()->version(),
 ]));
